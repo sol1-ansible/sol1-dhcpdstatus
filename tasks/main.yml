@@ -1,0 +1,35 @@
+---
+# Loading vars
+
+- name: Creates install dir
+  file: 
+    path: /usr/local/dhcpstatus
+    state: directory
+
+- name: install dhcpstatus library
+  unarchive:
+    remote_src: no
+    src: "files/{{ version }}/libraries.tar"
+    dest: "/usr/local/dhcpstatus"
+
+- name: set dhcp lease file in config
+  lineinfile: 
+    path: "/usr/local/dhcpstatus/dhcpstatus.ini"
+    regex: '^leases_file='
+    line: leases_file=/var/lib/dhcp/dhcpd.leases
+ 
+- name: set dhcp config file in config
+  lineinfile: 
+    path: "/usr/local/dhcpstatus/dhcpstatus.ini"
+    regex: '^conf_file='
+    line: conf_file=/etc/dhcp/dhcpd.conf
+
+- name: install dhcpstatus script
+  copy:
+    src: "files/{{ version }}/scripts/dhcpstatus"
+    dest: "/usr/local/bin/dhcpstatus"
+    owner: root
+    group: root
+    mode: u=rwx,g=rw,o=rw
+
+
